@@ -25,61 +25,51 @@ function setup() {
             board[i][j] = new Cell(false, [i*size, j*size]);
         }
     }
+    /*board[floor(m /2)][floor(n / 2)].status = true;
+    board[floor(m /2)][floor(n / 2) + 1].status = true;
+    board[floor(m /2)][floor(n / 2) + 2].status = true;
+
+    board[floor(m /2) + 1][floor(n / 2) - 1].status = true;
+    board[floor(m /2) + 1][floor(n / 2)].status = true;
+    board[floor(m /2) + 1][floor(n / 2) + 1].status = true;*/
+
+    board[floor(m /2)][floor(n / 2)].status = true;
+    board[floor(m /2)][floor(n / 2) + 1].status = true;
+    board[floor(m /2) + 1][floor(n / 2)].status = true;
+
+    board[floor(m /2) + 3][floor(n / 2) + 2].status = true;
+    board[floor(m /2) + 3][floor(n / 2) + 3].status = true;
+    board[floor(m /2) + 2][floor(n / 2) + 3].status = true;
 
     createCanvas(canvasWidth, canvasHeight);
 }
 
 function updateCell(i, j, previousBoard) {
     let count = 0;
-    //check neighbourgh cells, there must be cleaner...
-    console.log("here", i, j)
-    console.log(previousBoard[i-1][j-1], "hello");
-    if (previousBoard[i-1][j-1] != undefined) {
-        if(previousBoard[i-1][j-1].status === true)
-            count++;
-    } else if (previousBoard[i-1][j] != undefined) { 
-        if (previousBoard[i-1][j].status === true) 
-            count++;
-    } else if(previousBoard[i-1][j+1] != undefined) { 
-        if (previousBoard[i-1][j+1].status === true) 
-            count++;
-    } else if (previousBoard[i][j-1] != undefined) { 
-        if (previousBoard[i][j-1].status === true) 
-            count++;
-    } else if(previousBoard[i][j+1] != undefined) {
-        if(previousBoard[i][j+1].status === true) 
-            count++;
-    } else if (previousBoard[i+1][j-1] != undefined) {
-        if(previousBoard[i+1][j-1].status === true) 
-            count++;
-    } else if(previousBoard[i+1][j] != undefined) {
-        if(previousBoard[i+1][j].status === true) 
-            count++;
-    } else if(previousBoard[i+1][j+1] != undefined) {
-        if(previousBoard[i+1][j+1].status === true) 
-            count++;
-    }
-    console.log("Hajaisg")
-    if((previousBoard[i][j].status === true) && (count < 2 || count > 3)) {
-        board[i][j].status = false;
-    } else if(count === 3) { //if dead but 3 alive neighbours.
-        //alive
-        board[i][j].status = true;
+
+    //check neighbourgh cells.
+    for(let k=-1; k < 2; k++) {
+        for(let p=-1; p < 2; p++) {
+            if( !(i + k < 0 || j + p < 0 || j + p >= n || i + k >= m) ) {
+                if(k != 0 || p != 0) {
+                    if(previousBoard[i+k][j+p].status === true)
+                        count++;
+                }
+            }
+        }
     }
 
+    if((previousBoard[i][j].status === true) && (count < 2 || count > 3)) {
+        board[i][j].status = false;
+    } else if((count === 3) && (previousBoard[i][j].status === false)) { //if dead but 3 alive neighbours.
+        //alive
+        board[i][j].status = true;
+    } 
 }
 
 function draw() {
     background(220);
-    //slice copies previous array into a new reference, previousBoard and board are 
-    //now independent.
-    let previousBoard = board.slice()
-    //update all cells based on previousBoard. (we'll modify board based on previous)
-    for(let i=0; i < m; i++) {
-        for(let j=0; j < n; j++) {
-            updateCell(i, j, previousBoard);
-        }
-    }
+
     //draw rectangles. 
     for(let i=0; i < m; i++) {
         for(let j=0; j < n; j++) {
@@ -91,4 +81,15 @@ function draw() {
             rect(board[i][j].position[0], board[i][j].position[1], size, size);
         }
     }
+    
+    //slice copies previous array into a new reference, previousBoard and board are 
+    //now independent.
+    let previousBoard = board.slice()
+    //update all cells based on previousBoard. (we'll modify board based on previous)
+    for(let i=0; i < m; i++) {
+        for(let j=0; j < n; j++) {
+            updateCell(i, j, previousBoard);
+        }
+    }
+    
 }
