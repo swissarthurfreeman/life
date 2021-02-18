@@ -1,3 +1,11 @@
+/***********************************************************************
+ * Author : Arthur Freeman | Date : 18/02/2020                         *
+ * JavaScript implementation of Conway's game of life using p5.js.     *
+ * board is a matrix of Cells, every cell has a status and a position. *
+ * Alive === true, dead === false.                                     *
+ * Every cell gets updated based on previous saved copy of the board,  *
+ * this is obtained via copyMatrix().                                  *
+ ***********************************************************************/ 
 const size = 10;
 const canvasWidth = 400;
 const canvasHeight = 400;
