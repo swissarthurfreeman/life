@@ -1,9 +1,10 @@
-//size of cell in pixels.
-const size = 20;
+const size = 10;
 const canvasWidth = 400;
 const canvasHeight = 400;
 const n = canvasWidth / size;
 const m = canvasHeight / size;
+let board = [];
+let living = false;
 
 class Cell {
     constructor(status, position) {
@@ -12,20 +13,21 @@ class Cell {
     }
 }
 
-let board = [];
-
 function setup() {
-    
-    
     createCanvas(canvasWidth, canvasHeight);
-    frameRate( 10 )
+    frameRate(10);
+    noLoop();
+    initialiseBoard();
+}
+
+function initialiseBoard() {
     //initialise matrix.
     for(let i=0; i < m; i++) {
         board[i] = new Array(n);
     }
     //fill matrix of cells.
-    for(let i=0; i < m; i++ ) {
-        for(let j=0; j < n; j++ ) {
+    for(let i=0; i < m; i++) {
+        for(let j=0; j < n; j++) {
             board[i][j] = new Cell(false, [i*size, j*size]);
         }
     }
@@ -37,11 +39,32 @@ function setup() {
     board[1][2].status = true;
     board[2][1].status = true;
     
+    isLiving = false;
+    noLoop();
+}
+
+function start() {
+    isLiving = true;
+    loop();
 }
 
 function mousePressed() {
-    mouseX = 
-    mouseY
+    
+    if ( !(mouseX < 0 || mouseY < 0 || isLiving) ) {
+        let color = get(mouseX, mouseY);
+        let x = mouseX; 
+        let y = mouseY;
+        x = floor(x / size);
+        y = floor(y / size);
+        board[x][y].status = true;
+        if (color[0] === 0 && color[1] === 0 && color[2] === 0) {
+            fill('white');
+            board[x][y].status = false;
+        } else {            
+            fill('black');
+        }
+        rect(board[x][y].position[0], board[x][y].position[1], size, size);
+    }
 }
 
 function updateCell(i, j, previousBoard) {
@@ -59,7 +82,7 @@ function updateCell(i, j, previousBoard) {
     }
     if((previousBoard[i][j].status === true) && (count < 2 || count > 3)) {
         board[i][j].status = false;        
-    } else if((count === 3) && (previousBoard[i][j].status === false)) { //if dead but 3 alive neighbours.
+    } else if((count === 3) && (previousBoard[i][j].status === false)) { 
         board[i][j].status = true;
         
     } else if((previousBoard[i][j].status === true) && (count === 2 || count === 3)) {
@@ -68,20 +91,18 @@ function updateCell(i, j, previousBoard) {
 }
 
 function copyMatrix() {
-    let newMatrix = []
+    let newMatrix = [];
     for(let i=0; i < m; i++) {
         newMatrix[i] = [];
         for(let j=0; j < n; j++) {
             newMatrix[i][j] = new Cell(board[i][j].status, board[i][j].position);
         }
     }
-    return newMatrix
-} 
+    return newMatrix;
+}
 
 function draw() {
     background(220);
-
-    //draw rectangles. 
     for(let i=0; i < m; i++) {
         for(let j=0; j < n; j++) {
             if (board[i][j].status === true) {
@@ -93,11 +114,8 @@ function draw() {
         }
     }
     
-    //slice copies previous array into a new reference, previousBoard and board are 
-    //now independent.
     let previousBoard = copyMatrix();
     
-    //update all cells based on previousBoard. (we'll modify board based on previous)
     for(let i=0; i < m; i++) {
         for(let j=0; j < n; j++) {
             updateCell(i, j, previousBoard);
