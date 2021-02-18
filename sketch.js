@@ -15,6 +15,10 @@ class Cell {
 let board = [];
 
 function setup() {
+    
+    
+    createCanvas(canvasWidth, canvasHeight);
+    frameRate( 10 )
     //initialise matrix.
     for(let i=0; i < m; i++) {
         board[i] = new Array(n);
@@ -25,42 +29,23 @@ function setup() {
             board[i][j] = new Cell(false, [i*size, j*size]);
         }
     }
-    console.log("start", floor(m /2), floor(n / 2))
-    //[x, y] positions.
-    board[floor(m /2)][floor(n / 2)].status = true;
-    board[floor(m /2)+1][floor(n / 2)].status = true;
-    board[floor(m /2)+2][floor(n / 2)].status = true;
-    board[floor(m /2)+4][floor(n / 2)].status = true;
-    board[floor(m /2)][floor(n / 2)+1].status = true;
-    board[floor(m /2)+1][floor(n / 2)+1].status = true;
-    board[floor(m /2)+2][floor(n / 2)+1].status = true;
-
-    board[floor(m /2)][floor(n / 2)+2].status = true;
-    board[floor(m /2)+1][floor(n / 2)+2].status = true;
-    board[floor(m /2)+2][floor(n / 2)+2].status = true;
-    board[floor(m /2)][floor(n / 2)].status = true;
     
-    board[floor(m /2)+1][floor(n / 2)+4].status = true;
-    board[floor(m /2)+2][floor(n / 2)+4].status = true;
-    board[floor(m /2)+4][floor(n / 2)+4].status = true;
-    board[floor(m /2)][floor(n / 2)+4].status = true;
-    board[floor(m /2)+1][floor(n / 2)+4].status = true;
-    board[floor(m /2)+2][floor(n / 2)+4].status = true;
-
-    board[floor(m /2)][floor(n / 2)+4].status = true;
-    board[floor(m /2)+1][floor(n / 2)+4].status = true;
-    board[floor(m /2)+2][floor(n / 2)+4].status = true;
-
-    createCanvas(canvasWidth, canvasHeight);
-
-    frameRate( 10 )
+    //glider configuration.
+    board[0][0].status = true;
+    board[0][2].status = true;
+    board[1][1].status = true;
+    board[1][2].status = true;
+    board[2][1].status = true;
+    
 }
 
-//I'm 99.99% sure this function works, all the tests shows it does.
+function mousePressed() {
+    mouseX = 
+    mouseY
+}
+
 function updateCell(i, j, previousBoard) {
     let count = 0;
-
-    //check neighbourgh cells.
     for(let k=-1; k < 2; k++) {
         for(let p=-1; p < 2; p++) {
             if( !(i + k < 0 || j + p < 0 || j + p >= n || i + k >= m) ) {
@@ -72,18 +57,12 @@ function updateCell(i, j, previousBoard) {
             }
         }
     }
-    //console.log(count)
     if((previousBoard[i][j].status === true) && (count < 2 || count > 3)) {
-        //console.log("false", i, j, count)
-        board[i][j].status = false;
-        
+        board[i][j].status = false;        
     } else if((count === 3) && (previousBoard[i][j].status === false)) { //if dead but 3 alive neighbours.
-        //alive
-        //console.log("true", i, j, count)
         board[i][j].status = true;
         
     } else if((previousBoard[i][j].status === true) && (count === 2 || count === 3)) {
-        //console.log("true", i, j, count)
         board[i][j].status = true;
     }
 }
@@ -91,10 +70,11 @@ function updateCell(i, j, previousBoard) {
 function copyMatrix() {
     let newMatrix = []
     for(let i=0; i < m; i++) {
-        //console.log(board[i])
-        newMatrix[i] = board[i].slice()
+        newMatrix[i] = [];
+        for(let j=0; j < n; j++) {
+            newMatrix[i][j] = new Cell(board[i][j].status, board[i][j].position);
+        }
     }
-    //console.log(newMatrix)
     return newMatrix
 } 
 
@@ -117,9 +97,6 @@ function draw() {
     //now independent.
     let previousBoard = copyMatrix();
     
-    //updateCell(11, 11, previousBoard) //uncommenting this line creates weird results...
-    //updateCell(11, 9, previousBoard)
-    //console.log(previousBoard)
     //update all cells based on previousBoard. (we'll modify board based on previous)
     for(let i=0; i < m; i++) {
         for(let j=0; j < n; j++) {
