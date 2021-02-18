@@ -57,7 +57,7 @@ function start() {
 }
 
 function mousePressed() {
-    if ( !(mouseX < 0 || mouseY < 0 || isLiving) ) {
+    if ( !(mouseX < 0 || mouseY < 0 || mouseY > canvasHeight || mouseX > canvasWidth || isLiving) ) {
         let color = get(mouseX, mouseY);
         let x = mouseX; 
         let y = mouseY;
